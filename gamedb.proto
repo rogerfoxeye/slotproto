@@ -1,0 +1,54 @@
+syntax = "proto3";
+package slotgame.gamedb;
+option go_package = "server/pb;pb";
+
+// NATS RPC: gamedb。仅登录流程可使用 Upsert/Load/Touch。
+enum GameDBOperation {
+ GameDBOperationUnspecified = 0;
+ GameDBLoginUpsert = 1;
+ GameDBLoginLoad = 2;
+ GameDBLoginTouch = 3;
+}
+message UserData {
+ int64 uid = 1;
+ string op_token = 2;
+ string op_session = 3;
+ string op_uid = 4;
+ string nickname = 5;
+ string sg_nickname = 6;
+ string avatar = 7;
+ string platform = 8;
+ string currency = 9;
+ int64 balance = 10;
+ int64 last_login_at = 11;
+ string last_login_ip = 12;
+ int32 dev_mode = 13;
+ int64 carry = 14;
+ int64 op_updated_time = 15;
+ int64 created_at = 16; // UTC毫秒。
+ bytes game_stats = 17; // JSON。
+ bool dark_room = 18;
+ int64 credit = 19;
+ int32 add_credit = 20;
+ bytes slot_data = 21; // JSON。
+}
+message GameDBLoginRequest {
+ GameDBOperation operation = 1;
+ UserData user = 2;
+ int64 uid = 3;
+ int64 game_id = 4;
+ string request_id = 5; // 幂等请求编号。
+}
+message GameDBLoginResponse {
+ int32 code = 1; // 200成功；404不存在；500内部错误。
+ string message = 2;
+ UserData user = 3;
+ bool created = 4;
+}
+// 非登录业务：业务服必须先修改Redis，再通过持久化队列异步提交，禁止RPC。
+message GameDBUserMutation {
+ string request_id = 1;
+ int64 uid = 2;
+ map<string,string> fields = 3; // 白名单字段，JSON字段传JSON文本。
+ int64 revision = 4; // Redis内单玩家递增版本。
+}

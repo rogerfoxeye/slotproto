@@ -11,8 +11,8 @@ enum ServerType { // Service type IDs.
   ST_Dispatch = 10002; // Dispatch service.
   ST_Lobby = 10003; // Lobby service.
   ST_GM = 10004; // GM service.
-  ST_DB = 10005; // Stateless MySQL service.
-  ST_Log = 10006; // Stateless ClickHouse log service.
+  ST_DB = 10005; // Stateless gamedb MySQL business service.
+  ST_Log = 10006; // Stateless logdb MySQL log service.
   ST_Task = 10007; // Stateless task service.
   ST_Game = 10008; // Stateful game service.
 }
