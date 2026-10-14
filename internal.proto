@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "server/pb;pb";
+
+enum ServerType { // Service type IDs.
+  ST_Unspecified = 0; // Invalid service.
+  ST_Gate = 10000; // Gate service.
+  ST_Login = 10001; // Login service.
+  ST_Dispatch = 10002; // Dispatch service.
+  ST_Lobby = 10003; // Lobby service.
+  ST_GM = 10004; // GM service.
+  ST_DB = 10005; // Stateless MySQL service.
+  ST_Log = 10006; // Stateless ClickHouse log service.
+  ST_Task = 10007; // Stateless task service.
+  ST_Game = 10008; // Stateful game service.
+}
+
+enum ServiceControlStatus { // Service control status values aligned with fox registry.ServiceStatus.
+  SCS_Unspecified = 0; // Unspecified status.
+  SCS_Starting = 1; // Service is starting.
+  SCS_Running = 2; // Service is running.
+  SCS_Draining = 3; // Service is draining traffic.
+  SCS_Maintenance = 4; // Service is under maintenance.
+  SCS_Stopping = 5; // Service is stopping.
+  SCS_Stopped = 6; // Service is stopped.
+  SCS_Unhealthy = 7; // Service is unhealthy.
+}
+
+message ServerMessage { // Service-to-service envelope.
+  int32 msgId = 1; // Message ID.
+  uint64 seq = 2; // Request sequence.
+  bytes data = 3; // Payload bytes.
+  ServerType serverType = 4; // Source service type.
+  int64 uid = 5; // Player ID.
+  string gateId = 6; // Gate instance ID.
+  uint32 serviceType = 7; // Target service type.
+  string platform = 8; // Authenticated platform supplied by gate.
+}
+
+enum Code { // Common result codes.
+  C_Ok = 0; // Success.
+  C_BadRequest = 400; // Invalid request.
+  C_Unauthorized = 401; // Unauthorized.
+  C_Internal = 500; // Internal error.
+  C_NotLogin = 1001; // Not logged in.
+  C_AlreadyExists = 1002; // Resource already exists.
+  C_LoginElsewhere = 1003; // Account logged in elsewhere.
+  C_TokenInvalid = 1004; // Token is invalid, expired, or no longer active.
+}
+
+// Internal duplicate-session event; never sent as the client wire protocol.
+message UserOnline {
+  int64 uid = 1;
+  string gateId = 2;
+  string connId = 3;
+}
