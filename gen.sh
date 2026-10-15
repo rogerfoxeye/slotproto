@@ -21,11 +21,11 @@ if [ ! -f "$1" ]; then
   exit 1
 fi
 
-# source_relative 使 clinet.proto 直接生成 game/pb/clinet.pb.go。
+# 按 go_package 输出；module 去掉 server/pb 前缀，支持玩法独立子包。
 # 此脚本不自动删除输出目录，避免误删手写文件。
 protoc --proto_path="$SCRIPT_DIR" \
   --go_out="$OUT_DIR" \
-  --go_opt=paths=source_relative \
+  --go_opt=module=server/pb \
   "$@"
 
 echo "生成完成：$OUT_DIR"

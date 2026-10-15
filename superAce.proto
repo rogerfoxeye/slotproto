@@ -1,0 +1,236 @@
+syntax = "proto3";
+package superAce;
+option go_package = "server/pb/superAce;superAce";
+enum GameEvent {
+ GameEventUnspecified = 0;
+ C_Scene = 1001; // 新网关要求业务子命令为正数；旧场景请求0迁移为1001。
+ S_Scene = 1;
+ C_Bet = 2;
+ S_Bet = 3;
+ C_Leave = 4;
+ S_Leave = 5;
+ Nft_Jackpot = 6;
+}
+enum EnumCard {
+ VOID = 0;
+ PIECE = 1;
+ FLOWER = 2;
+ HEART = 3;
+ BLACK = 4;
+ J = 5;
+ Q = 6;
+ K = 7;
+ A = 8;
+ WILD = 9;
+ SCATTER = 10;
+ JACKPOT = 11;
+}
+enum EnumReward {
+ NULL = 0;
+ NORMAL = 1;
+ BIG = 2;
+ SUPER = 3;
+ MEGA = 4;
+ FREE = 5;
+ Jackpot = 6;
+}
+enum ErrCode {
+ Success = 0;
+ LarkBalance = 1;
+ Accounting = 2;
+ UnKnown = 3;
+ Frequently = 4;
+}
+enum EnumWeightMod {
+ ReelMode = 0;
+ WeightMode = 1;
+}
+message Scene {
+ .superAce.Rule rule = 1;
+ repeated .superAce.Card board = 2;
+ .superAce.UserData data = 3;
+ int64 Balance = 4;
+ uint64 last_request_id = 5;
+ ErrCode code = 6;
+ string msg = 7;
+}
+message Rule {
+ repeated int64 betList = 1;
+ int64 betDefault = 2;
+ repeated int64 roundOdds = 3;
+ int64 bonusOdds = 4;
+ int64 maxRound = 5;
+}
+message UserData {
+ int64 freeBet = 1;
+ int64 freeTimes = 2;
+ int64 freeWin = 3;
+ repeated .superAce.Card lastCards = 4;
+ int64 lastBet = 5;
+ int64 totalFree = 6;
+}
+message BetReq {
+ int64 bet = 1;
+ int64 buyBonus = 2;
+ string request_id = 3; // 必填，单玩家严格递增十进制编号；重发使用相同编号。
+}
+message Card {
+ .superAce.EnumCard icon = 1;
+ int64 gold = 2;
+}
+message BigWildRInfo {
+ int64 pos = 1;
+ int64 round = 2;
+}
+message IconOdd {
+ .superAce.EnumCard icon = 1;
+ int64 odds = 2;
+}
+message RoundInfo {
+ repeated .superAce.Card curCards = 1;
+ repeated int64 removePos = 2;
+ repeated int64 realWild = 3;
+ int64 multer = 4;
+ int64 reward = 5;
+ repeated .superAce.BigWildRInfo bigWildRInfo = 6;
+ repeated .superAce.IconOdd icons = 7;
+}
+message BetResp {
+ .superAce.ErrCode code = 1;
+ string msg = 2;
+ int64 bet = 3;
+ int64 betCost = 4;
+ int64 win = 5;
+ repeated .superAce.RoundInfo round = 6;
+ int64 freeTimes = 7;
+ int64 hitFree = 8;
+ .superAce.EnumReward bigReward = 9;
+ int64 totalFreeWin = 10;
+ int64 useFree = 11;
+ int64 Balance = 12;
+ int64 hitJackpot = 13;
+ int64 winJackpot = 14;
+ int64 totalFree = 15;
+ int32 index = 16;
+ string request_id = 17;
+}
+message LeaveResp {
+ .superAce.ErrCode code = 1;
+}
+message NtfJackpot {
+ int64 jp = 1;
+ int64 uid = 2;
+ string avatar = 3;
+}
+message SuperAcePlayerData {
+ int64 uid = 1;
+ int64 bet = 2;
+ int64 profit = 3;
+ int64 tax = 4;
+ int64 balance = 5;
+ int64 pre_balance = 6;
+ .superAce.BetResp resp = 7;
+ string nickname = 13;
+ string avatar = 14;
+ int64 waitTime = 15;
+ bool is_lease = 16;
+ int32 dev_mode = 17;
+}
+message SuperAceGameEnd {
+ string game_no = 1;
+ int64 start_time = 2;
+ int64 end_time = 3;
+ int32 level = 4;
+ int64 base_bet = 5;
+ repeated .superAce.SuperAcePlayerData player_data = 6;
+ int64 tax_rate = 7;
+ string op_token = 9;
+}
+message SuperAceConfig {
+ .superAce.Rule Rule = 1;
+ repeated .superAce.IconMeta iconOdds = 2;
+ repeated .superAce.ColWeight colIconWeight = 3;
+ repeated .superAce.MetaWeight wildDivisionWeight = 4;
+ repeated .superAce.MetaWeight wildRoundWeight = 5;
+ int64 goldRate = 6;
+ repeated .superAce.ColIcons colIcons = 7;
+ .superAce.EnumWeightMod mod = 8;
+ int64 goldRateWild = 9;
+ repeated int64 rewardLevelOdds = 10;
+ .superAce.JpConfig jpConfig = 11;
+ int64 init_jackpot = 12;
+ int64 jp_xy_rate = 13;
+ int64 jp_x_rate = 14;
+ int64 jp_y_rate = 15;
+}
+message OddsMeta {
+ int64 count = 1;
+ int64 odds = 2;
+}
+message IconMeta {
+ .superAce.EnumCard icon = 1;
+ repeated .superAce.OddsMeta odds = 2;
+}
+message MetaWeight {
+ int64 meta = 1;
+ int64 weight = 2;
+}
+message ColWeight {
+ int64 col = 1;
+ repeated .superAce.MetaWeight weight = 2;
+}
+message ColIcons {
+ int64 col = 1;
+ repeated .superAce.EnumCard icon = 2;
+}
+message JpConfig {
+message JpReward {
+ int64 betMin = 1;
+ int64 betMax = 2;
+ int64 award = 3;
+}
+ int64 pot = 1;
+ int64 xRatio = 2;
+ int64 yRatio = 3;
+ int64 zRatio = 4;
+ repeated .superAce.JpConfig.JpReward reward = 5;
+ int64 minPot = 6;
+}
+
+// 当前项目玩法主命令与服务发现类型。
+enum SuperAceServiceID { SuperAceServiceUnspecified = 0; SuperAceService = 10101; }
+message Empty {}
+message WaterLevel { int64 min_profit_rate=1; int64 max_profit_rate=2; int64 adjustment=3; int64 hysteresis=4; }
+message ReelsControl { int64 min_system_margin=1; int64 max_system_margin=2; int64 min_personal_margin=3; int64 max_personal_margin=4; string reels=5; }
+message Reel { repeated int64 icons=1; }
+message ReelSet { repeated Reel reels=1; }
+// 启动时由game_config_10101的Excel JSON快照及实例运行参数填充；消息仍使用protobuf。
+message RuntimeConfig {
+ SuperAceConfig game=1;
+ repeated ReelSet reels=2;
+ repeated ReelsControl reels_control=3;
+ repeated WaterLevel jackpot_water=4;
+ repeated string kafka_brokers=5;
+ int64 session_idle_seconds=6;
+ repeated WaterLevel public_water=7;
+}
+// 作为protobuf二进制的base64值放入既有users.slot_data JSON列，键为10101。
+message PlayerState {
+ UserData data=1;
+ int64 total_bet=2;
+ int64 total_win=3;
+ uint64 last_request_id=4;
+ BetResp last_response=5;
+ reserved 6,7;
+ int64 last_bet_at=8;
+ int64 last_balance_before=10;
+}
+message SharedState {
+ int64 jackpot=1;
+ int64 jackpot_system=2;
+ int64 total_bet=3;
+ int64 total_win=4;
+ string stat_date=5;
+}
+
+message ActiveSession { int64 uid=1; string gate_id=2; string conn_id=3; string binding_id=4; int64 last_seen_ms=5; uint64 logged_request_id=6; bool leaving=7; }
