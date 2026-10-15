@@ -1,0 +1,16 @@
+syntax = "proto3";
+package pb;
+option go_package = "server/pb;pb";
+
+// 使用 ServerMessage 封装，通过 Kafka 发送至 ST_Log(10006)。
+enum LogDBMessageID {
+  LogDBMessageUnspecified = 0;
+  LogDBExecuteSQL = 6001; // ServerMessage.msgId，data 为 LogDBSQLRequest。
+}
+
+// 业务服生成完整 MySQL 业务日志语句；logdb 只负责执行。
+// 生产者须安全编码字段值，并让 SQL 在 Kafka 重投时幂等。
+// logdb 数据库账号只能拥有日志表权限。
+message LogDBSQLRequest {
+  string sql = 1; // 完整的单条 MySQL 业务日志语句。
+}
