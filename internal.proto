@@ -37,6 +37,8 @@ message ServerMessage { // Service-to-service envelope.
   string gateId = 6; // Gate instance ID.
   uint32 serviceType = 7; // Target service type.
   string platform = 8; // Authenticated platform supplied by gate.
+  string connId = 9; // Gate-local connection ID; combine with gateId for identity.
+  string bindingId = 10; // Dispatch assignment generation; echo in leave events.
 }
 
 enum Code { // Common result codes.
@@ -55,4 +57,14 @@ message UserOnline {
   int64 uid = 1;
   string gateId = 2;
   string connId = 3;
+}
+
+// Published by a gameplay instance on dispatch.player.left; not a client message.
+message PlayerServiceLeft {
+  int64 uid = 1;
+  string connId = 2;
+  string gateId = 3;
+  uint32 mainCmd = 4;
+  string service = 5; // Instance-specific NATS service name from dispatch binding.
+  string bindingId = 6; // Echo ServerMessage.bindingId to reject delayed events.
 }
