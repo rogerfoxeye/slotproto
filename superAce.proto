@@ -198,7 +198,7 @@ message JpReward {
 }
 
 // 当前项目玩法主命令与服务发现类型。
-enum SuperAceServiceID { SuperAceServiceUnspecified = 0; SuperAceService = 10101; }
+// Service ID is defined once as pb.ServerType.ST_SuperAce in internal.proto (10101).
 message Empty {}
 message WaterLevel { int64 min_profit_rate=1; int64 max_profit_rate=2; int64 adjustment=3; int64 hysteresis=4; }
 message ReelsControl { int64 min_system_margin=1; int64 max_system_margin=2; int64 min_personal_margin=3; int64 max_personal_margin=4; string reels=5; }

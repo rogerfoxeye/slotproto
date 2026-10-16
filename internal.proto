@@ -4,7 +4,7 @@ package pb;
 
 option go_package = "server/pb;pb";
 
-enum ServerType { // Service type IDs.
+enum ServerType { // Concrete service IDs; client maincmd and registry Type use the same ID.
   ST_Unspecified = 0; // Invalid service.
   ST_Gate = 10000; // Gate service.
   ST_Login = 10001; // Login service.
@@ -14,7 +14,9 @@ enum ServerType { // Service type IDs.
   ST_DB = 10005; // Stateless gamedb MySQL business service.
   ST_Log = 10006; // Stateless logdb MySQL log service.
   ST_Task = 10007; // Stateless task service.
-  ST_Game = 10008; // Stateful game service.
+  reserved 10008;
+  reserved "ST_Game";
+  ST_SuperAce = 10101; // superace service; client maincmd and registry Type are 10101.
 }
 
 enum ServiceControlStatus { // Service control status values aligned with fox registry.ServiceStatus.
