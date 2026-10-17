@@ -1,0 +1,53 @@
+syntax = "proto3";
+package msg;
+option go_package="server/pb/apicontract;apicontract";
+// Preserves the original API GameService wire contract; no history/activity/mail services.
+message GetCashReq {
+int64 uid = 1;
+int64 game_id = 2;
+}
+message GetCashResp {
+int64 code = 1;
+int64 uid = 2;
+int64 balance = 3;
+int64 carry = 4;
+int64 preserve = 5;
+}
+message TransferInOutReq {
+enum Type { tt_transfer_type_none=0; tt_transfer_type_carry=1; tt_transfer_type_return_carry=2; tt_transfer_type_preserve=3; tt_transfer_type_preserve_bet=4; tt_transfer_type_all_out=11; tt_transfer_type_in=12; tt_transfer_type_out=13; tt_transfer_type_internal=14; tt_transfer_type_internal_preserve=15; tt_transfer_type_internal_bet=16; }
+enum Source { ts_transfer_source_none=0; ts_transfer_source_carry=1; ts_transfer_source_game=2; ts_transfer_source_prop=3; ts_transfer_source_piggy_bank=4; ts_transfer_source_feedback=5; ts_transfer_source_jackpot=6; ts_transfer_source_promos=7; ts_transfer_source_millionaire_invite=8; ts_transfer_source_exchange_transfer=9; ts_transfer_source_exchange=10; ts_transfer_source_cp_bonus_win=11; ts_transfer_source_cp_jackpot_win=12; ts_transfer_source_cp_promo_win=13; ts_transfer_source_mines_jackpot=14; ts_transfer_source_change_nick=15; ts_transfer_source_deduct_coupon=16; ts_transfer_source_mail_award=17; }
+int64 uid = 1;
+int64 game_id = 2;
+int32 room_level = 3;
+string game_no = 4;
+Type type = 5;
+Source source = 6;
+int64 bet = 7;
+int64 win = 8;
+int64 preserve = 9;
+}
+message TransferInOutResp {
+int64 code = 1;
+int64 uid = 2;
+int64 balance = 3;
+int64 carry = 4;
+int64 real_transfer = 5;
+int64 updated_time = 6;
+int64 preserve = 7;
+}
+message AdjustmentReq {
+int64 uid = 1;
+string adjustment_id = 2;
+int64 adjust_amount = 3;
+int64 source = 4;
+}
+message AdjustmentResp {
+int64 code = 1;
+int64 uid = 2;
+int64 adjust_amount = 3;
+int64 balance_before = 4;
+int64 balance_after = 5;
+int64 updated_time = 6;
+}
+service GameService { rpc GetCash(GetCashReq) returns (GetCashResp); rpc TransferInOut(TransferInOutReq) returns (TransferInOutResp); rpc Adjustment(AdjustmentReq) returns (AdjustmentResp); }
+
