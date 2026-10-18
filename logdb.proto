@@ -1,11 +1,14 @@
 syntax = "proto3";
 package pb;
+import "superAce.proto";
 option go_package = "server/pb;pb";
 
 // 使用 ServerMessage 封装，通过 Kafka 发送至 ST_Log(10006)。
 enum LogDBMessageID {
   LogDBMessageUnspecified = 0;
   LogDBExecuteSQL = 6001; // ServerMessage.msgId，data 为 LogDBSQLRequest。
+  LogDBQueryGameRecords = 6002; // 只读 RPC，不经过 Kafka。
+  LogDBQuerySuperAceRecordDetail = 6003; // SuperAce详情只读RPC。
 }
 
 // 业务服生成完整 MySQL 业务日志语句；logdb 只负责执行。
@@ -13,4 +16,61 @@ enum LogDBMessageID {
 // logdb 数据库账号只能拥有日志表权限。
 message LogDBSQLRequest {
   string sql = 1; // 完整的单条 MySQL 业务日志语句。
+  repeated string statements = 2; // 可选后续语句，与 sql 在同一事务提交，供汇总和详情日志使用。
+}
+
+// 保持旧客户端字段编号和 JSON 字段名。
+message GetGameRecordsReq {
+  string date = 1;
+  repeated int64 game_ids = 2;
+  uint32 page = 3;
+  uint32 page_size = 4;
+  string start_date = 5;
+  string end_date = 6;
+}
+message GameRecord {
+  string game_no = 1;
+  int64 start_time = 2;
+  int64 end_time = 3;
+  int64 game_id = 4;
+  string game_name = 5;
+  int32 level = 6;
+  string room_name = 7;
+  int64 base_bet = 8;
+  int64 bet = 9;
+  int64 win = 10;
+  int64 tax = 11;
+  int64 balance = 12;
+}
+message GetGameRecordsResp {
+  int64 code = 1;
+  string msg = 2;
+  repeated GameRecord records = 3;
+  int64 total = 4;
+  uint32 page = 5;
+  uint32 page_size = 6;
+}
+message LogDBGameRecordsRequest {
+  int64 uid = 1; // API 从已验证的 token 获取，禁止信任客户端 uid。
+  int64 start_ms = 2;
+  int64 end_ms = 3; // 不包含此边界。
+  repeated int64 game_ids = 4;
+  uint32 page = 5;
+  uint32 page_size = 6;
+}
+
+message GetSuperAceRecordDetailReq {
+  string game_no = 1; // game_records返回的对局编号。
+}
+message LogDBSuperAceRecordDetailRequest {
+  int64 uid = 1; // 来自已验证token。
+  string game_no = 2;
+}
+message GetSuperAceRecordDetailResp {
+  int64 code = 1;
+  string msg = 2;
+  string game_no = 3;
+  int64 event_time = 4;
+  int64 balance_before = 5;
+  superAce.BetResp detail = 6;
 }

@@ -51,3 +51,5 @@ int64 updated_time = 6;
 }
 service GameService { rpc GetCash(GetCashReq) returns (GetCashResp); rpc TransferInOut(TransferInOutReq) returns (TransferInOutResp); rpc Adjustment(AdjustmentReq) returns (AdjustmentResp); }
 
+
+message WalletEndpoint { string address=1; string secret=2; string owner=3; }
