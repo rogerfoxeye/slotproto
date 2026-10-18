@@ -53,6 +53,8 @@ message Scene {
  uint64 last_request_id = 5;
  ErrCode code = 6;
  string msg = 7;
+ BetResp last_result = 8; // 最近一局完整结果，无历史时不设置。
+ int64 last_win = 9; // 最近一局派彩，单位分，与last_result.win一致。
 }
 message Rule {
  repeated int64 betList = 1;
@@ -72,7 +74,7 @@ message UserData {
 message BetReq {
  int64 bet = 1;
  int64 buyBonus = 2;
- string request_id = 3; // 必填，单玩家严格递增十进制编号；重发使用相同编号。
+ string request_id = 3; // 必填，单玩家严格递增十进制编号；相同编号重复请求直接丢弃，不返回结果。
 }
 message Card {
  .superAce.EnumCard icon = 1;
@@ -224,6 +226,7 @@ message PlayerState {
  reserved 6,7;
  int64 last_bet_at=8;
  int64 last_balance_before=10;
+ string last_game_no=11; // 稳定局号：gameid|实例id|玩家id|Unix纳秒。
 }
 message SharedState {
  int64 jackpot=1;
