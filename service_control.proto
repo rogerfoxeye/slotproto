@@ -1,0 +1,27 @@
+syntax = "proto3";
+package slotgame.control;
+option go_package = "server/pb/control;control";
+
+// Admin-to-controller and controller-to-service lifecycle commands.
+enum ServiceAction {
+ SERVICE_ACTION_UNSPECIFIED = 0;
+ SERVICE_ACTION_STOP = 1;
+ SERVICE_ACTION_START = 2;
+}
+message ServiceTarget {
+ int32 type = 1;
+ int64 id = 2;
+}
+message ServiceControlRequest {
+ string request_id = 1;
+ ServiceAction action = 2;
+ repeated ServiceTarget targets = 3;
+}
+message ServiceControlResult {
+ ServiceTarget target = 1;
+ bool accepted = 2;
+ string message = 3;
+}
+message ServiceControlResponse {
+ repeated ServiceControlResult results = 1;
+}
