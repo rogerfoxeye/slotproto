@@ -25,6 +25,16 @@ Source source = 6;
 int64 bet = 7;
 int64 win = 8;
 int64 preserve = 9;
+// 每次独立母单的旋转结算完成后为true。
+bool is_end_round = 10;
+// 免费旋转或购买特色入口旋转。
+bool is_feature = 11;
+// 仅本次实际购买特色时为true，不沿用到后续免费旋转。
+bool is_feature_buy = 12;
+// 验证重发；渠道按协议不校验已过期会话，仍须校验账号及幂等性。
+bool is_validate_bet = 13;
+// 待处理投注的调整，不等同于Cash/Adjustment余额调整接口。
+bool is_adjustment = 14;
 }
 message TransferInOutResp {
 int64 code = 1;
