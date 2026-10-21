@@ -17,6 +17,7 @@ enum ServerType { // Concrete service IDs; client maincmd and registry Type use 
   reserved 10008;
   reserved "ST_Game";
   ST_SuperAce = 10101; // superace service; client maincmd and registry Type are 10101.
+  ST_Tmp = 10999; // Example service; retain its existing registration ID.
 }
 
 enum ServiceControlStatus { // Service control status values aligned with fox registry.ServiceStatus.
