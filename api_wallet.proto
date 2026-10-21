@@ -1,7 +1,7 @@
 syntax = "proto3";
 package msg;
 option go_package="server/pb/apicontract;apicontract";
-// Preserves the original API GameService wire contract; no history/activity/mail services.
+// Shared wallet message fields remain compatible; the internal transport is NATS RPC.
 message GetCashReq {
 int64 uid = 1;
 int64 game_id = 2;
@@ -59,7 +59,46 @@ int64 balance_before = 4;
 int64 balance_after = 5;
 int64 updated_time = 6;
 }
-service GameService { rpc GetCash(GetCashReq) returns (GetCashResp); rpc TransferInOut(TransferInOutReq) returns (TransferInOutResp); rpc Adjustment(AdjustmentReq) returns (AdjustmentResp); }
+// Internal wallet transport: NATS RPC with protobuf JSON (protojson).
+enum WalletRPCOperation {
+ WalletRPCOperationUnspecified = 0;
+ WalletRPCGetCash = 1;
+ WalletRPCTransfer = 2;
+ WalletRPCAdjustment = 3;
+}
+enum WalletRPCStatus {
+ WalletRPCOK = 0;
+ WalletRPCInvalidArgument = 1;
+ WalletRPCUnauthenticated = 2;
+ WalletRPCUnavailable = 3;
+ WalletRPCConflict = 4;
+ WalletRPCBusy = 5;
+ WalletRPCFailedPrecondition = 6;
+ WalletRPCDeadlineExceeded = 7;
+ WalletRPCInternal = 8;
+}
+message WalletRPCRequest {
+ WalletRPCOperation operation = 1;
+ string transaction_id = 2;
+ string authorization = 3;
+ int64 deadline_unix_milli = 7;
+ oneof payload {
+  GetCashReq cash = 4;
+  TransferInOutReq transfer = 5;
+  AdjustmentReq adjustment = 6;
+ }
+}
+message WalletRPCResponse {
+ WalletRPCOperation operation = 1;
+ WalletRPCStatus status = 2;
+ string message = 3;
+ oneof payload {
+  GetCashResp cash = 4;
+  TransferInOutResp transfer = 5;
+  AdjustmentResp adjustment = 6;
+ }
+}
+
 
 
 message WalletEndpoint { string address=1; string secret=2; string owner=3; }
