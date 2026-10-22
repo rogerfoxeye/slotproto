@@ -9,6 +9,11 @@ enum GameDBOperation {
  GameDBLoginLoad = 2;
  GameDBLoginTouch = 3;
 }
+// 帐号类型；默认真人，客户端不能改变已有帐号类型。
+enum UserType {
+ UserTypeHuman = 0;
+ UserTypeRobot = 1;
+}
 message UserData {
  int64 uid = 1;
  string op_token = 2;
@@ -31,6 +36,7 @@ message UserData {
  int64 credit = 19;
  int32 add_credit = 20;
  bytes slot_data = 21; // JSON。
+ UserType user_type = 22; // 0真人，1机器人。
 }
 message GameDBLoginRequest {
  GameDBOperation operation = 1;

@@ -3,6 +3,7 @@ syntax = "proto3";
 package pb;
 
 option go_package = "server/pb;pb";
+import "gamedb.proto";
 
 enum ServerType { // Concrete service IDs; client maincmd and registry Type use the same ID.
   ST_Unspecified = 0; // Invalid service.
@@ -42,6 +43,8 @@ message ServerMessage { // Service-to-service envelope.
   string platform = 8; // Authenticated platform supplied by gate.
   string connId = 9; // Gate-local connection ID; combine with gateId for identity.
   string bindingId = 10; // Dispatch assignment generation; echo in leave events.
+  slotgame.gamedb.UserType user_type = 11; // API认证后由gate附加，禁止使用客户端声明。
+  int64 login_id = 12; // API token签发代次，机器人重新登录时重置内存状态。
 }
 
 enum Code { // Common result codes.
@@ -70,4 +73,5 @@ message PlayerServiceLeft {
   uint32 mainCmd = 4;
   string service = 5; // Instance-specific NATS service name from dispatch binding.
   string bindingId = 6; // Echo ServerMessage.bindingId to reject delayed events.
+  slotgame.gamedb.UserType user_type = 7; // 机器人绑定只保存在内存。
 }
