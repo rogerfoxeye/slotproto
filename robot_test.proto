@@ -1,0 +1,58 @@
+syntax = "proto3";
+package slotgame.robot_test;
+option go_package = "server/pb;pb";
+import "internal.proto";
+
+enum RobotTestCommand {
+ ROBOT_TEST_COMMAND_UNSPECIFIED = 0;
+ ROBOT_TEST_START = 1;
+}
+enum RobotTestStatus {
+ ROBOT_TEST_STATUS_UNSPECIFIED = 0;
+ ROBOT_TEST_RUNNING = 1;
+ ROBOT_TEST_COMPLETED = 2;
+ ROBOT_TEST_FAILED = 3;
+}
+message RobotTestRequest {
+ RobotTestCommand command = 1;
+ string uuid = 2; // 客户端确认后生成的UUID v4；重试沿用同一码。
+ pb.ServerType game_type_id = 3;
+ int32 robot_count = 4;
+ int64 total_count = 5; // 全部机器人合计付费局数；免费局额外完成。
+}
+message RobotTestRecord {
+ string uuid = 1;
+ pb.ServerType game_type_id = 2;
+ int64 started_at = 3; // UTC毫秒。
+ int32 robot_count = 4;
+ int64 total_count = 5;
+ RobotTestStatus status = 6;
+ bytes result_json = 7; // 测试汇总JSON，存储格式，不是通信编码。
+ int64 finished_at = 8;
+ string instance_id = 9;
+ int64 revision = 10; // 单任务递增版本，防止旧消息覆盖终态。
+}
+message RobotTestResponse {
+ bool accepted = 1;
+ string message = 2;
+ RobotTestRecord record = 3;
+}
+message RobotTestResult {
+ int64 paid_spins = 1;
+ int64 free_spins = 2;
+ int64 total_spins = 3;
+ int64 total_bet_cents = 4;
+ int64 total_win_cents = 5;
+ int64 jackpot_win_cents = 6;
+ int64 jackpot_hits = 7;
+ int64 non_jackpot_winning_spins = 8;
+ int64 non_jackpot_profitable_spins = 9;
+ double total_rtp = 10; // 百分比。
+ double jackpot_rtp = 11;
+ double non_jackpot_rtp = 12;
+ int64 elapsed_ms = 13;
+ int64 bet_cents = 14;
+ int64 completed_robots = 15;
+ string error_message = 16;
+ int64 completed_cycles = 17; // 付费局及其免费局全部完成的周期数。
+}
