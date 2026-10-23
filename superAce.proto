@@ -218,6 +218,8 @@ message RuntimeConfig {
 }
 // 作为protobuf二进制的base64值放入既有users.slot_data JSON列，键为10101。
 message PlayerState {
+ int64 last_config_major=12; // 最近一次spin使用的配置大版本，仅审计，不固定后续免费旋转。
+ int64 last_config_revision=13; // 最近一次spin使用的配置发布批次。
  UserData data=1;
  int64 total_bet=2;
  int64 total_win=3;
