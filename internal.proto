@@ -63,6 +63,7 @@ message UserOnline {
   int64 uid = 1;
   string gateId = 2;
   string connId = 3;
+  bool disconnect = 4; // Operator logout; unlike a replacement login this emits offline.
 }
 
 // Published by a gameplay instance on dispatch.player.left; not a client message.
@@ -74,4 +75,12 @@ message PlayerServiceLeft {
   string service = 5; // Instance-specific NATS service name from dispatch binding.
   string bindingId = 6; // Echo ServerMessage.bindingId to reject delayed events.
   slotgame.gamedb.UserType user_type = 7; // 机器人绑定只保存在内存。
+}
+
+// Durable gate disconnect notification. Replaced connections do not emit this event.
+message UserOffline {
+  int64 uid = 1;
+  string gate_id = 2;
+  string conn_id = 3;
+  int64 login_id = 4;
 }
