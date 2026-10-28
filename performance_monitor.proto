@@ -1,0 +1,115 @@
+syntax = "proto3";
+package slotgame.performance;
+option go_package = "server/pb;pb";
+
+enum MonitorSampleKind {
+ MONITOR_SAMPLE_UNSPECIFIED = 0;
+ MONITOR_SAMPLE_HOST = 1;
+ MONITOR_SAMPLE_SERVICES = 2;
+}
+enum MonitorComponent {
+ MONITOR_COMPONENT_UNSPECIFIED = 0;
+ MONITOR_COMPONENT_REDIS = 1;
+ MONITOR_COMPONENT_MYSQL = 2;
+ MONITOR_COMPONENT_KAFKA = 3;
+}
+enum MonitorCollectionStatus {
+ MONITOR_COLLECTION_UNSPECIFIED = 0;
+ MONITOR_COLLECTION_OK = 1;
+ MONITOR_COLLECTION_FAILED = 2;
+}
+message MonitorDisk {
+ string mount_path = 1;
+ uint64 total_bytes = 2;
+ uint64 available_bytes = 3;
+}
+message MonitorHostMetrics {
+ uint64 memory_total_bytes = 1;
+ uint64 memory_available_bytes = 2;
+ double cpu_percent = 3;
+ repeated MonitorDisk disks = 4;
+ uint32 cpu_count = 5;
+}
+message MonitorContainerMetrics {
+ string id = 1;
+ string name = 2;
+ string state = 3;
+ double cpu_percent = 4;
+ uint64 memory_usage_bytes = 5;
+ uint64 memory_working_set_bytes = 6;
+ uint64 memory_limit_bytes = 7;
+ uint32 restart_count = 8;
+ bool oom_killed = 9;
+ MonitorCollectionStatus status = 10;
+ string error_code = 11;
+}
+message MonitorPartition {
+ string topic = 1;
+ int32 partition = 2;
+ int32 broker = 3;
+ uint64 size_bytes = 4;
+ int64 current_offset = 5;
+ int64 end_offset = 6;
+ int64 lag = 7;
+ string consumer_group = 8;
+ bool size_available = 9;
+ bool lag_available = 10;
+}
+message MonitorServiceMetrics {
+ MonitorComponent component = 1;
+ string container_name = 2;
+ MonitorCollectionStatus status = 3;
+ string error_code = 4;
+ map<string, double> values = 5;
+ map<string, string> labels = 6;
+ repeated MonitorPartition partitions = 7;
+ int64 collected_at_ms = 8;
+}
+message MonitorReport {
+ string report_id = 1;
+ string host_id = 2;
+ string hostname = 3;
+ MonitorSampleKind kind = 4;
+ int64 collected_at_ms = 5;
+ MonitorHostMetrics host = 6;
+ repeated MonitorContainerMetrics containers = 7;
+ repeated MonitorServiceMetrics services = 8;
+ uint64 duration_ms = 9;
+ repeated string errors = 10;
+}
+message MonitorAck {
+ bool accepted = 1;
+ string message = 2;
+}
+message MonitorQuery {
+ string host_id = 1;
+ MonitorSampleKind kind = 2;
+ int64 from_ms = 3;
+ int64 to_ms = 4;
+ uint32 page = 5;
+ uint32 page_size = 6;
+}
+message MonitorHost {
+ string host_id = 1;
+ string hostname = 2;
+ int64 last_received_at_ms = 3;
+}
+message MonitorRecord {
+ uint64 id = 1;
+ int64 received_at_ms = 2;
+ MonitorReport report = 3;
+}
+message MonitorPage {
+ repeated MonitorHost hosts = 1;
+ repeated MonitorRecord records = 2;
+ uint64 total = 3;
+ MonitorRecord latest_host = 4;
+ MonitorRecord latest_services = 5;
+}
+message MonitorCleanupRequest {
+ bool confirmed = 1;
+}
+message MonitorCleanupResponse {
+ uint64 deleted_count = 1;
+ int64 cutoff_ms = 2;
+}
