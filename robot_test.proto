@@ -55,4 +55,6 @@ message RobotTestResult {
  int64 completed_robots = 15;
  string error_message = 16;
  int64 completed_cycles = 17; // 付费局及其免费局全部完成的周期数。
+ int64 free_win_cents = 18; // 实际使用免费次数的局累计派彩，含该局JP；不含触发免费局的付费局派彩。
+ double free_rtp = 19; // 免费局累计派彩 / 总付费下注 * 100，百分比。
 }
