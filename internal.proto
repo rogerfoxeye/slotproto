@@ -52,6 +52,7 @@ enum Code { // Common result codes.
   C_BadRequest = 400; // Invalid request.
   C_Unauthorized = 401; // Unauthorized.
   C_Internal = 500; // Internal error.
+  C_Maintenance = 503; // Service maintenance; no new gameplay accepted.
   C_NotLogin = 1001; // Not logged in.
   C_AlreadyExists = 1002; // Resource already exists.
   C_LoginElsewhere = 1003; // Account logged in elsewhere.
