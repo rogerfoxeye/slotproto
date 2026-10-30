@@ -1,0 +1,13 @@
+syntax = "proto3";
+package slotgame.population;
+option go_package = "server/pb;pb";
+
+// A complete memory-session count, sent only while the gameplay is running.
+message PlayerPopulationReport {
+ int32 game_type = 1;
+ string instance_id = 2;
+ int64 sampled_at = 3;
+ int64 players = 4;
+ int64 humans = 5;
+ int64 robots = 6;
+}
