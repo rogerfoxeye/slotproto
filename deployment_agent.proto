@@ -1,0 +1,56 @@
+syntax = "proto3";
+package slotgame.deployment;
+option go_package = "server/pb;pb";
+
+enum DeploymentAction {
+ DEPLOYMENT_ACTION_UNSPECIFIED = 0;
+ DEPLOYMENT_ACTION_INVENTORY = 1;
+ DEPLOYMENT_ACTION_PULL = 2;
+ DEPLOYMENT_ACTION_PLAN = 3;
+ DEPLOYMENT_ACTION_REPLACE = 4;
+}
+enum DeploymentState {
+ DEPLOYMENT_STATE_UNSPECIFIED = 0;
+ DEPLOYMENT_STATE_QUEUED = 1;
+ DEPLOYMENT_STATE_RUNNING = 2;
+ DEPLOYMENT_STATE_SUCCEEDED = 3;
+ DEPLOYMENT_STATE_FAILED = 4;
+ DEPLOYMENT_STATE_REVIEW_REQUIRED = 5;
+}
+message DeploymentContainer {
+ string name = 1;
+ string container_id = 2;
+ string image = 3;
+ string image_id = 4;
+ string state = 5;
+}
+message DeploymentTask {
+ string task_id = 1;
+ string host_id = 2;
+ string environment = 3;
+ DeploymentAction action = 4;
+ string container = 5;
+ string image = 6;
+ string expected_container_id = 7;
+ int64 expires_at_ms = 8;
+ bool drain_confirmed = 9;
+}
+message DeploymentResult {
+ string task_id = 1;
+ DeploymentState state = 2;
+ string message = 3;
+ repeated DeploymentContainer containers = 4;
+ string previous_container = 5;
+ int64 finished_at_ms = 6;
+}
+message DeploymentExchange {
+ string host_id = 1;
+ string environment = 2;
+ string nonce = 3;
+ DeploymentResult result = 4;
+}
+message DeploymentReply {
+ string nonce = 1;
+ string acknowledged_task_id = 2;
+ DeploymentTask task = 3;
+}
