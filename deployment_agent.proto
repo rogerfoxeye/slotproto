@@ -11,6 +11,10 @@ enum DeploymentAction {
  DEPLOYMENT_ACTION_REPLACE = 4;
  DEPLOYMENT_ACTION_DELETE_RELEASE = 5;
  DEPLOYMENT_ACTION_CREATE = 6;
+ DEPLOYMENT_ACTION_PREVIEW_CLEANUP = 7;
+ DEPLOYMENT_ACTION_CLEANUP = 8;
+ DEPLOYMENT_ACTION_PREVIEW_IMAGES = 9;
+ DEPLOYMENT_ACTION_CLEANUP_IMAGES = 10;
 }
 enum DeploymentState {
  DEPLOYMENT_STATE_UNSPECIFIED = 0;
@@ -40,6 +44,22 @@ message DeploymentTask {
  string repository = 10;
  string release_tag = 11;
  slotgame.catalog.ServiceCatalog catalog_snapshot=12;
+ repeated DeploymentHistoryContainer cleanup_candidates=13;
+ bool automatic_cleanup=14;
+ repeated DeploymentLocalImage cleanup_images=15;
+}
+message DeploymentLocalImage {
+ string image_id=1;
+ repeated string references=2;
+ int64 size_bytes=3;
+}
+message DeploymentHistoryContainer {
+ string deployment_task_id=1;
+ string instance=2;
+ string previous_name=3;
+ string previous_id=4;
+ string current_id=5;
+ int64 deployed_at_ms=6;
 }
 message DeploymentResult {
  string task_id = 1;
@@ -48,12 +68,15 @@ message DeploymentResult {
  repeated DeploymentContainer containers = 4;
  string previous_container = 5;
  int64 finished_at_ms = 6;
+ repeated DeploymentHistoryContainer cleanup_candidates=7;
+ repeated DeploymentLocalImage cleanup_images=8;
 }
 message DeploymentExchange {
  string host_id = 1;
  string environment = 2;
  string nonce = 3;
  DeploymentResult result = 4;
+ bool supports_cleanup=5;
 }
 message DeploymentReply {
  string nonce = 1;
