@@ -1,0 +1,27 @@
+syntax="proto3";
+package slotgame.release;
+option go_package="server/pb;pb";
+enum CIBuildState {
+ CI_BUILD_UNSPECIFIED=0;
+ CI_BUILD_QUEUED=1;
+ CI_BUILD_RUNNING=2;
+ CI_BUILD_SUCCEEDED=3;
+ CI_BUILD_FAILED=4;
+ CI_BUILD_INTERRUPTED=5;
+}
+message ReleaseImage {string name=1;string tag=2;string digest=3;}
+message CIRelease {
+ string repository=1;
+ string tag=2;
+ string commit=3;
+ string created=4;
+ string updated=5;
+ CIBuildState state=6;
+ string stage=7;
+ string error=8;
+ string current_service=9;
+ repeated string services=10;
+ repeated ReleaseImage images=11;
+}
+message CIBuildService {string name=1;string repository=2;string source=3;string dockerfile=4;string context=5;string binary_output=6;}
+message ReleaseIndex {repeated CIRelease releases=1;int64 generated_at_ms=2;repeated CIBuildService build_services=3;int64 catalog_revision=4;}

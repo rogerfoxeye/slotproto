@@ -1,0 +1,37 @@
+syntax="proto3";
+package slotgame.catalog;
+option go_package="server/pb;pb";
+enum CatalogUpdateMode {
+ CATALOG_UPDATE_UNSPECIFIED=0;
+ CATALOG_UPDATE_DRAIN=1;
+ CATALOG_UPDATE_RESTART=2;
+}
+message CatalogBuild {
+ string source=1;
+ string dockerfile=2;
+ string context=3;
+ string binary_output=4;
+}
+message CatalogInstance {
+ string host_id=1;
+ int64 id=2;
+ string container=3;
+ string runtime_template=4;
+ uint64 memory_mib=5;
+ string network=6;
+ bool allow_create=7;
+}
+message CatalogService {
+ string name=1;
+ string repository=2;
+ int32 service_type=3;
+ CatalogUpdateMode update_mode=4;
+ CatalogBuild build=5;
+ repeated CatalogInstance instances=6;
+}
+message ServiceCatalog {
+ int64 revision=1;
+ string environment=2;
+ repeated CatalogService services=3;
+ string description=4;
+}
