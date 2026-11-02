@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package slotgame.client;
 
+import "internal.proto";
+
 option go_package = "server/pb;pb"; // 生成到 game/pb 目录。
 
 // 仅保留本文件需要的服务组，数值与 egameserver 一致。
@@ -14,6 +16,7 @@ enum SrvGroup {
 enum SubMSGKIND {
   SubMSGKIND_Unspecified = 0; // 心跳子命令。
   GateMSGLoginElsewhere = 1001; // 异地登录通知。
+  GateMSGServiceStopped = 1002; // 通用玩法停服通知。
   LobbyMSGLogin = 2001; // 大厅登录，请求与响应使用相同子命令。
 }
 
@@ -54,4 +57,10 @@ message LoginResponse {
 message CommResp {
   int32 code = 1;
   string msg = 2;
+}
+
+// 主动推送：mainCmd=ServerGroupGate，subCmd=GateMSGServiceStopped。
+message ServiceStoppedNotify {
+  pb.Code code = 1; // 停服原因码，例如 C_Maintenance。
+  int32 game_id = 2; // 玩法服务ID，与该玩法 mainCmd 一致。
 }
