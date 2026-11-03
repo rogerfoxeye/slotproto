@@ -20,6 +20,7 @@ message CatalogInstance {
  uint64 memory_mib=5;
  string network=6;
  bool allow_create=7;
+ uint32 http_port=8; // 从 Redis 实例配置校验的 HTTP 端口；宿主机使用相同端口。
 }
 message CatalogService {
  string name=1;
@@ -28,6 +29,7 @@ message CatalogService {
  CatalogUpdateMode update_mode=4;
  CatalogBuild build=5;
  repeated CatalogInstance instances=6;
+ bool manage_nginx=7; // 按服务维护 upstream，部署时摘流，启服后恢复。
 }
 message ServiceCatalog {
  int64 revision=1;

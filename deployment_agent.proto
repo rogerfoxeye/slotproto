@@ -77,10 +77,14 @@ message DeploymentExchange {
  string nonce = 3;
  DeploymentResult result = 4;
  bool supports_cleanup=5;
+ string drain_task_id=6; // 已摘流的活动部署任务，请求 admin 停服并查询排空。
+ bool supports_nginx=7;
 }
 message DeploymentReply {
  string nonce = 1;
  string acknowledged_task_id = 2;
  DeploymentTask task = 3;
  slotgame.catalog.ServiceCatalog catalog=4;
+ bool drained=5;
+ repeated string running_containers=6; // 仅本机、当前清单内已确认启服的 nginx 实例。
 }
