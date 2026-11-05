@@ -15,6 +15,7 @@ enum DeploymentAction {
  DEPLOYMENT_ACTION_CLEANUP = 8;
  DEPLOYMENT_ACTION_PREVIEW_IMAGES = 9;
  DEPLOYMENT_ACTION_CLEANUP_IMAGES = 10;
+ DEPLOYMENT_ACTION_START_SERVICE = 11; // Internal service-control operation.
 }
 enum DeploymentState {
  DEPLOYMENT_STATE_UNSPECIFIED = 0;
@@ -79,6 +80,7 @@ message DeploymentExchange {
  bool supports_cleanup=5;
  string drain_task_id=6; // 已摘流的活动部署任务，请求 admin 停服并查询排空。
  bool supports_nginx=7;
+ bool supports_start_service=8;
 }
 message DeploymentReply {
  string nonce = 1;

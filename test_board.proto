@@ -1,0 +1,13 @@
+syntax = "proto3";
+package slotgame.test_board;
+option go_package = "server/pb;pb";
+import "internal.proto";
+enum BoardAction { BOARD_UNSPECIFIED = 0; BOARD_SET = 1; BOARD_CLEAR = 2; }
+message BoardCell { int32 symbol = 1; bool gold = 2; }
+message TestBoardRequest {
+ pb.ServerType game = 1;
+ int64 uid = 2;
+ BoardAction action = 3;
+ repeated BoardCell cells = 4; // Column-major, top to bottom.
+}
+message TestBoardResponse { bool accepted = 1; string message = 2; }
